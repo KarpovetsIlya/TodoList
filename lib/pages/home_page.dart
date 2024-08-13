@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todolist/data/hive_data_store.dart';
 import 'package:todolist/model/task.dart';
 import 'package:todolist/pages/task_page.dart';
 
@@ -10,7 +11,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomePage> {
-  Task? _task;
+  final HiveDataStore _hiveDataStore = HiveDataStore();
+  List<Task> _tasks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTasks();
+  }
+
+  Future<void> _loadTasks() async {
+    final tasks = _hiveDataStore.box.values.toList();
+    setState(() {
+      _tasks = tasks;
+    });
+  }
 
   Future<void> _navigateToTaskPage() async {
     final result = await Navigator.push(
@@ -18,9 +33,9 @@ class _HomeScreenState extends State<HomePage> {
       MaterialPageRoute(builder: (context) => const TaskPage()),
     );
 
-    if (result != null) {
+    if (result != null && result is Task) {
       setState(() {
-        _task = result;
+        _tasks.add(result);
       });
     }
   }
@@ -28,15 +43,16 @@ class _HomeScreenState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(),
+      appBar: buildAppBar(),
       body: Column(
         children: [
           Expanded(
-            child: ListView(
-              children: [
-                if (_task != null) _buildTaskItem(),
-                _buildTextField(),
-              ],
+            child: ListView.builder(
+              itemCount: _tasks.length,
+              itemBuilder: (context, index) {
+                final task = _tasks[index];
+                return _buildTaskItem(task);
+              },
             ),
           ),
         ],
@@ -58,7 +74,7 @@ class _HomeScreenState extends State<HomePage> {
     );
   }
 
-  AppBar appBar() {
+  AppBar buildAppBar() {
     return AppBar(
       toolbarHeight: 150,
       backgroundColor: Colors.white,
@@ -80,9 +96,9 @@ class _HomeScreenState extends State<HomePage> {
             ),
             Row(
               children: [
-                const Text(
-                  'Выполенно — 1',
-                  style: TextStyle(
+                Text(
+                  'Выполенно — ${_tasks.where((task) => task.isDone).length}',
+                  style: const TextStyle(
                     fontSize: 15,
                     color: Colors.grey,
                   ),
@@ -100,45 +116,67 @@ class _HomeScreenState extends State<HomePage> {
     );
   }
 
-  Widget _buildTaskItem() {
-    return Row(
-      children: [
-        const Checkbox(
-          tristate: true,
-          onChanged: null,
-          value: null,
-        ),
-        Text(
-          _task?.title ?? '',
-          style: const TextStyle(
-            fontSize: 24,
-            color: Colors.black,
-          ),
-        ),
-        const Spacer(),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.info_outline, color: Colors.grey),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTextField() {
-    return const Row(
-      children: [
-        Expanded(
+  Widget _buildTaskItem(Task task) {
+    return Dismissible(
+      key: Key(task.id),
+      direction: DismissDirection.endToStart,
+      background: const ColoredBox(
+        color: Colors.red,
+        child: Align(
+          alignment: Alignment.centerRight,
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 45.0),
-            child: TextField(
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                labelText: 'Что-то надо сделать...',
-              ),
+            padding: EdgeInsets.all(16),
+            child: Icon(
+              Icons.delete,
+              color: Colors.white,
             ),
           ),
         ),
-      ],
+      ),
+      onDismissed: (direction) {
+        _hiveDataStore.deleteTask(task: task);
+        setState(() {
+          _tasks.remove(task);
+        });
+      },
+      child: Row(
+        children: [
+          Checkbox(
+            value: task.isDone,
+            onChanged: (bool? value) {
+              setState(() {
+                task.isDone = value ?? false;
+                _hiveDataStore.updateTask(task: task);
+              });
+            },
+          ),
+          Expanded(
+            child: Text(
+              task.title,
+              style: TextStyle(
+                fontSize: 24,
+                color: task.isDone ? Colors.grey : Colors.black,
+                decoration: task.isDone ? TextDecoration.lineThrough : null,
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => TaskPage(task: task),
+                ),
+              ).then((updatedTask) {
+                if (updatedTask != null && updatedTask is Task) {
+                  setState(() {});
+                }
+              });
+            },
+            icon: const Icon(Icons.info_outline, color: Colors.grey),
+          ),
+        ],
+      ),
     );
   }
 }

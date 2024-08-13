@@ -1,47 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:todolist/data/hive_data_store.dart';
 import 'package:todolist/model/task.dart';
-import 'package:todolist/services/database_service.dart';
+import 'package:uuid/uuid.dart';
 
 const List<String> list = <String>['Низкий', 'Средний', 'Высокий'];
 
 class TaskPage extends StatefulWidget {
-  const TaskPage({super.key});
+  final Task? task;
+
+  const TaskPage({super.key, this.task});
 
   @override
   State<TaskPage> createState() => _TaskPageState();
 }
 
 class _TaskPageState extends State<TaskPage> {
-  String dropdownValue = list.first;
-  DateTime date = DateTime.now();
-  late var formattedDate;
+  late String dropdownValue;
+  late DateTime date;
+  late String formattedDate;
   late TextEditingController _titleController;
+  final HiveDataStore _hiveDataStore = HiveDataStore();
   late Task _currentTask;
 
   @override
   void initState() {
     super.initState();
-    _currentTask = Task(
-        id: 0,
+    if (widget.task != null) {
+      _currentTask = widget.task!;
+      dropdownValue = _currentTask.importance;
+      date = _currentTask.deadline;
+      _titleController = TextEditingController(text: _currentTask.title);
+    } else {
+      _currentTask = Task(
+        id: const Uuid().v1(),
         title: '',
-        importance: dropdownValue,
-        deadline: date,
-        isDone: false);
-    _titleController = TextEditingController(text: _currentTask.title);
-    dropdownValue = _currentTask.importance;
-    date = _currentTask.deadline;
+        importance: 'Низкий',
+        deadline: DateTime.now(),
+        isDone: false,
+      );
+      dropdownValue = _currentTask.importance;
+      date = _currentTask.deadline;
+      _titleController = TextEditingController();
+    }
     formattedDate = DateFormat('d MMMM yyyy').format(date);
   }
-
-  final DatabaseService db = DatabaseService.instance;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const Icon(Icons.close, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -49,13 +60,16 @@ class _TaskPageState extends State<TaskPage> {
         actions: [
           TextButton(
             onPressed: () async {
-              _currentTask = _currentTask.copyWith(
-                title: _titleController.text,
-                importance: dropdownValue,
-                deadline: date,
-              );
-              db.createTask(_currentTask);
-              Navigator.pop(context, _currentTask);
+              var todo = _currentTask;
+              todo.title = _titleController.text;
+              todo.importance = dropdownValue;
+              todo.deadline = date;
+              if (widget.task == null) {
+                await _hiveDataStore.addTask(todo, task: todo);
+              } else {
+                await _hiveDataStore.updateTask(task: todo);
+              }
+              Navigator.pop(context, todo);
             },
             child: const Text(
               'Сохранить',
@@ -162,19 +176,6 @@ class _TaskPageState extends State<TaskPage> {
                     thickness: 1.0,
                     indent: 5,
                     endIndent: 5,
-                  ),
-                  const SizedBox(height: 20),
-                  TextButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.delete),
-                    label: const Text(
-                      'Удалить',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      padding: const EdgeInsets.all(0),
-                    ),
                   ),
                 ],
               ),

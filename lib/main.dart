@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:todolist/data/hive_data_store.dart';
+import 'package:todolist/model/task.dart';
 import 'package:todolist/pages/home_page.dart';
-import 'package:todolist/services/database_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DatabaseService.instance.database;
+  await Hive.initFlutter();
+  Hive.registerAdapter<Task>(TaskAdapter());
+  await Hive.openBox<Task>(HiveDataStore.boxName);
   runApp(const MyApp());
 }
 
