@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:todolist/data/hive_data_store.dart';
 import 'package:todolist/model/task.dart';
-import 'package:todolist/pages/task_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,15 +27,16 @@ class _HomeScreenState extends State<HomePage> {
     });
   }
 
-  Future<void> _navigateToTaskPage() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const TaskPage()),
-    );
-
-    if (result != null && result is Task) {
+  Future<void> _navigateToTaskPage(Task? task) async {
+    final updatedTask = await context.push('/taskpage', extra: task);
+    if (updatedTask != null && updatedTask is Task) {
       setState(() {
-        _tasks.add(result);
+        final index = _tasks.indexWhere((t) => t.id == updatedTask.id);
+        if (index != -1) {
+          _tasks[index] = updatedTask;
+        } else {
+          _tasks.add(updatedTask);
+        }
       });
     }
   }
@@ -66,7 +67,9 @@ class _HomeScreenState extends State<HomePage> {
                 Icons.add,
                 color: Colors.blue,
               ),
-              onPressed: _navigateToTaskPage,
+              onPressed: () {
+                _navigateToTaskPage(null);
+              },
             ),
           ],
         ),
@@ -162,16 +165,7 @@ class _HomeScreenState extends State<HomePage> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TaskPage(task: task),
-                ),
-              ).then((updatedTask) {
-                if (updatedTask != null && updatedTask is Task) {
-                  setState(() {});
-                }
-              });
+              _navigateToTaskPage(task);
             },
             icon: const Icon(Icons.info_outline, color: Colors.grey),
           ),

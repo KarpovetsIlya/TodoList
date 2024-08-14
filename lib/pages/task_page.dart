@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:todolist/data/hive_data_store.dart';
 import 'package:todolist/model/task.dart';
@@ -54,7 +55,7 @@ class _TaskPageState extends State<TaskPage> {
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context);
+            context.go('/');
           },
         ),
         actions: [
@@ -69,7 +70,7 @@ class _TaskPageState extends State<TaskPage> {
               } else {
                 await _hiveDataStore.updateTask(task: todo);
               }
-              Navigator.pop(context, todo);
+              context.go('/');
             },
             child: const Text(
               'Сохранить',
