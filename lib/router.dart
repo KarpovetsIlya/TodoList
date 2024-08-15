@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:todolist/model/task.dart';
-import 'package:todolist/pages/home_page.dart';
-import 'package:todolist/pages/task_page.dart';
+import 'package:todolist/pages/home/home_page.dart';
+import 'package:todolist/pages/task/task_page.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/',
