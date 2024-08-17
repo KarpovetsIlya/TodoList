@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:todolist/model/task.dart';
-import 'package:todolist/data/hive_data_store.dart';
+import 'package:todolist/data/task_data_store.dart';
 import 'package:todolist/pages/task/widgets/custom_data_picker.dart';
 import 'package:todolist/pages/task/widgets/custom_dropdown_button.dart';
 import 'package:todolist/pages/task/widgets/custom_title_input.dart';
 import 'package:uuid/uuid.dart';
 
-const List<String> list = <String>['Низкий', 'Средний', 'Высокий'];
+const List<String> list = <String>['Низкий', 'Нет', 'Высокий'];
 
 class TaskPage extends StatefulWidget {
   final Task? task;
@@ -40,7 +40,7 @@ class _TaskPageState extends State<TaskPage> {
       _currentTask = Task(
         id: const Uuid().v1(),
         title: '',
-        importance: 'Низкий',
+        importance: 'Нет',
         deadline: DateTime.now(),
         isDone: false,
       );
@@ -79,11 +79,12 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.appBarTheme.backgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon: Icon(Icons.close, color: theme.iconTheme.color),
           onPressed: () {
             context.go('/');
           },
@@ -94,9 +95,11 @@ class _TaskPageState extends State<TaskPage> {
               _saveTask();
               context.go('/');
             },
-            child: const Text(
+            child: Text(
               'Сохранить',
-              style: TextStyle(color: Colors.black),
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.iconTheme.color,
+              ),
             ),
           ),
         ],
@@ -121,7 +124,7 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   const SizedBox(height: 20),
                   Divider(
-                    color: Colors.grey[400],
+                    color: theme.dividerColor,
                     thickness: 1.0,
                     indent: 5,
                     endIndent: 5,
@@ -134,7 +137,7 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                   const SizedBox(height: 20),
                   Divider(
-                    color: Colors.grey[400],
+                    color: theme.dividerColor,
                     thickness: 1.0,
                     indent: 5,
                     endIndent: 5,

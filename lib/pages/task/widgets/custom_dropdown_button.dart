@@ -14,23 +14,31 @@ class CustomDropdownButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Важность',
-          style: TextStyle(fontSize: 18, color: Colors.black),
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: theme.textTheme.titleLarge?.color,
+          ),
         ),
         DropdownButton<String>(
           value: value,
           elevation: 16,
-          style: TextStyle(color: Colors.grey[600], fontSize: 15),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.textTheme.bodyLarge?.color,
+          ),
           underline: Container(
             height: 2,
-            color: Colors.grey[200],
+            color: theme.dividerColor,
           ),
-          onChanged: (dynamic newValue) {
-            onChanged(newValue as String); // Приведение типа
+          onChanged: (String? newValue) {
+            if (newValue != null) {
+              onChanged(newValue);
+            }
           },
           items: options.map<DropdownMenuItem<String>>((String option) {
             return DropdownMenuItem<String>(

@@ -7,12 +7,17 @@ class CustomBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     return BottomAppBar(
+      color: theme.bottomAppBarTheme.color,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           IconButton(
-            icon: const Icon(Icons.add, color: Colors.blue),
+            icon: Icon(
+              Icons.add,
+              color: theme.primaryColor,
+            ),
             onPressed: onAdd,
           ),
         ],

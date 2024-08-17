@@ -15,8 +15,33 @@ class TaskItem extends StatelessWidget {
     this.onEdit,
   });
 
+  IconData? _getPriorityIcon() {
+    switch (task.importance) {
+      case 'Высокий':
+        return Icons.arrow_upward;
+      case 'Низкий':
+        return Icons.arrow_downward;
+      default:
+        return null;
+    }
+  }
+
+  Color _getPriorityColor() {
+    switch (task.importance) {
+      case 'Высокий':
+        return Colors.green;
+      case 'Низкий':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final priorityIcon = _getPriorityIcon();
+    final priorityColor = _getPriorityColor();
+
     return Dismissible(
       key: Key(task.id),
       direction: DismissDirection.endToStart,
@@ -43,13 +68,23 @@ class TaskItem extends StatelessWidget {
           Checkbox(
             value: task.isDone,
             onChanged: onCheckboxChanged,
+            activeColor: Colors.green,
           ),
+          if (priorityIcon != null) ...[
+            Icon(
+              priorityIcon,
+              color: task.isDone ? Colors.grey : priorityColor,
+            ),
+            const SizedBox(width: 8),
+          ],
           Expanded(
             child: Text(
               task.title,
               style: TextStyle(
                 fontSize: 24,
-                color: task.isDone ? Colors.grey : Colors.black,
+                color: task.isDone
+                    ? Colors.grey
+                    : Theme.of(context).textTheme.bodyLarge?.color,
                 decoration: task.isDone ? TextDecoration.lineThrough : null,
               ),
             ),

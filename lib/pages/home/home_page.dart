@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:todolist/data/hive_data_store.dart';
+import 'package:todolist/data/task_data_store.dart';
 import 'package:todolist/model/task.dart';
 import 'package:todolist/pages/home/widgets/custom_app_bar.dart';
 import 'package:todolist/pages/home/widgets/custom_bottom_bar.dart';
@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomeScreenState extends State<HomePage> {
   final HiveDataStore _hiveDataStore = HiveDataStore();
   List<Task> _tasks = [];
+  bool _isVisible = true;
 
   @override
   void initState() {
@@ -26,7 +27,7 @@ class _HomeScreenState extends State<HomePage> {
   Future<void> _loadTasks() async {
     final tasks = _hiveDataStore.box.values.toList();
     setState(() {
-      _tasks = tasks;
+      _tasks = tasks.cast<Task>();
     });
   }
 
@@ -41,26 +42,37 @@ class _HomeScreenState extends State<HomePage> {
           _tasks.add(updatedTask);
         }
       });
+      await _hiveDataStore.updateTask(task: updatedTask);
     }
   }
 
-  void _deleteTask(Task task) {
-    _hiveDataStore.deleteTask(task: task);
+  void _deleteTask(Task task) async {
+    await _hiveDataStore.deleteTask(task: task);
     setState(() {
       _tasks.remove(task);
     });
   }
 
-  void _toggleTaskCompletion(Task task, bool? value) {
+  void _toggleTaskCompletion(Task task, bool? value) async {
     task.isDone = value ?? false;
-    _hiveDataStore.updateTask(task: task);
+    await _hiveDataStore.updateTask(task: task);
     setState(() {});
+  }
+
+  void _toggleVisibility() {
+    setState(() {
+      _isVisible = !_isVisible;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(_tasks),
+      appBar: CustomAppBar(
+        tasks: _tasks,
+        isVisible: _isVisible,
+        onToggleVisibility: _toggleVisibility,
+      ),
       body: Column(
         children: [
           Expanded(
@@ -68,18 +80,20 @@ class _HomeScreenState extends State<HomePage> {
               itemCount: _tasks.length,
               itemBuilder: (context, index) {
                 final task = _tasks[index];
-                return TaskItem(
-                  task: task,
-                  onCheckboxChanged: (value) {
-                    _toggleTaskCompletion(task, value);
-                  },
-                  onDelete: () {
-                    _deleteTask(task);
-                  },
-                  onEdit: () {
-                    _navigateToTaskPage(task);
-                  },
-                );
+                return _isVisible || !task.isDone
+                    ? TaskItem(
+                        task: task,
+                        onCheckboxChanged: (value) {
+                          _toggleTaskCompletion(task, value);
+                        },
+                        onDelete: () {
+                          _deleteTask(task);
+                        },
+                        onEdit: () {
+                          _navigateToTaskPage(task);
+                        },
+                      )
+                    : Container();
               },
             ),
           ),

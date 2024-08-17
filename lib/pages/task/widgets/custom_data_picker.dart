@@ -5,20 +5,25 @@ class CustomDataPicker extends StatelessWidget {
   final ValueChanged<DateTime> onDateSelected;
   final String formattedDate;
 
-  const CustomDataPicker(
-      {super.key,
-      required this.date,
-      required this.onDateSelected,
-      required this.formattedDate});
+  const CustomDataPicker({
+    super.key,
+    required this.date,
+    required this.onDateSelected,
+    required this.formattedDate,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Сделать до',
-          style: TextStyle(fontSize: 18, color: Colors.black),
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: theme.textTheme.titleLarge?.color,
+          ),
         ),
         TextButton(
           onPressed: () async {
@@ -28,16 +33,32 @@ class CustomDataPicker extends StatelessWidget {
               firstDate: DateTime(2022),
               lastDate: DateTime(2030),
               locale: const Locale('ru', 'RU'),
+              builder: (context, child) {
+                return Theme(
+                  data: theme.copyWith(
+                    colorScheme: theme.colorScheme.copyWith(
+                      primary: theme.primaryColor,
+                      onSurface: theme.textTheme.bodyLarge?.color,
+                    ),
+                  ),
+                  child: child!,
+                );
+              },
             );
             if (selectedDate != null) {
               onDateSelected(selectedDate);
             }
           },
           style: TextButton.styleFrom(
-            foregroundColor: Colors.blue,
+            foregroundColor: theme.primaryColor,
             padding: const EdgeInsets.all(0),
           ),
-          child: Text(formattedDate),
+          child: Text(
+            formattedDate,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.primaryColor,
+            ),
+          ),
         ),
       ],
     );
