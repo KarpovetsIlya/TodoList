@@ -1,24 +1,22 @@
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todolist/model/task.dart';
-import 'package:flutter/foundation.dart';
 
 class HiveDataStore {
   static const boxName = 'taskBox';
   final Box<Task> box = Hive.box<Task>(boxName);
 
-  Future<void> addTask(todo, {required Task task}) async {
+  Future<void> addTask(final todo, {required final Task task}) async {
     await box.put(task.id, task);
   }
 
-  Future<Task?> getTask({required String id}) async {
-    return box.get(id);
-  }
+  Future<Task?> getTask({required final String id}) async => box.get(id);
 
-  Future<void> updateTask({required Task task}) async {
+  Future<void> updateTask({required final Task task}) async {
     await task.save();
   }
 
-  Future<void> deleteTask({required Task task}) async {
+  Future<void> deleteTask({required final Task task}) async {
     await task.delete();
   }
 

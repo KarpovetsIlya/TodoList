@@ -11,7 +11,7 @@ class TaskAdapter extends TypeAdapter<Task> {
   final int typeId = 0;
 
   @override
-  Task read(BinaryReader reader) {
+  Task read(final BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
@@ -26,7 +26,7 @@ class TaskAdapter extends TypeAdapter<Task> {
   }
 
   @override
-  void write(BinaryWriter writer, Task obj) {
+  void write(final BinaryWriter writer, final Task obj) {
     writer
       ..writeByte(5)
       ..writeByte(0)
@@ -45,7 +45,7 @@ class TaskAdapter extends TypeAdapter<Task> {
   int get hashCode => typeId.hashCode;
 
   @override
-  bool operator ==(Object other) =>
+  bool operator ==(final Object other) =>
       identical(this, other) ||
       other is TaskAdapter &&
           runtimeType == other.runtimeType &&

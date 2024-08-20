@@ -18,12 +18,10 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
+  Widget build(final BuildContext context) => MaterialApp.router(
       title: 'Flutter Demo',
       theme: ThemeColors.lightTheme,
       darkTheme: ThemeColors.darkTheme,
-      themeMode: ThemeMode.system,
       supportedLocales: const [
         Locale('en', 'US'),
         Locale('ru', 'RU'),
@@ -35,5 +33,4 @@ class MyApp extends StatelessWidget {
       ],
       routerConfig: router,
     );
-  }
 }

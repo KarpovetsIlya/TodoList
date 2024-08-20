@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:todolist/model/task.dart';
 import 'package:todolist/data/task_data_store.dart';
+import 'package:todolist/model/task.dart';
 import 'package:todolist/pages/task/widgets/custom_data_picker.dart';
 import 'package:todolist/pages/task/widgets/custom_dropdown_button.dart';
 import 'package:todolist/pages/task/widgets/custom_title_input.dart';
@@ -52,13 +52,13 @@ class _TaskPageState extends State<TaskPage> {
     formattedDate = DateFormat('d MMMM yyyy', 'ru_RU').format(date);
   }
 
-  void _setImportance(String value) {
+  void _setImportance(final String value) {
     setState(() {
       dropdownValue = value;
     });
   }
 
-  void _setDeadline(DateTime value) {
+  void _setDeadline(final DateTime value) {
     setState(() {
       date = value;
       formattedDate = DateFormat('d MMMM yyyy', 'ru_RU').format(value);
@@ -66,9 +66,10 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   Future<void> _saveTask() async {
-    _currentTask.title = _titleController.text;
-    _currentTask.importance = dropdownValue;
-    _currentTask.deadline = date;
+    _currentTask
+      ..title = _titleController.text
+      ..importance = dropdownValue
+      ..deadline = date;
 
     if (widget.task == null) {
       await _hiveDataStore.addTask(_currentTask, task: _currentTask);
@@ -78,7 +79,7 @@ class _TaskPageState extends State<TaskPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
@@ -125,7 +126,7 @@ class _TaskPageState extends State<TaskPage> {
                   const SizedBox(height: 20),
                   Divider(
                     color: theme.dividerColor,
-                    thickness: 1.0,
+                    thickness: 1,
                     indent: 5,
                     endIndent: 5,
                   ),
@@ -138,7 +139,7 @@ class _TaskPageState extends State<TaskPage> {
                   const SizedBox(height: 20),
                   Divider(
                     color: theme.dividerColor,
-                    thickness: 1.0,
+                    thickness: 1,
                     indent: 5,
                     endIndent: 5,
                   ),

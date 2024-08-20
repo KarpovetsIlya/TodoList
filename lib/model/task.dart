@@ -25,20 +25,19 @@ class Task extends HiveObject {
   bool isDone;
 
   factory Task.create({
-    required String? title,
-    required String? importance,
-    DateTime? deadline,
+    required final String? title,
+    required final String? importance,
+    final DateTime? deadline,
   }) =>
       Task(
         id: const Uuid().v1(),
-        title: title ?? "",
-        importance: importance ?? "",
+        title: title ?? '',
+        importance: importance ?? '',
         deadline: deadline ?? DateTime.now(),
         isDone: false,
       );
 
   @override
-  String toString() {
-    return 'Task{id: $id, title: $title, importance: $importance, deadline: $deadline, isDone: $isDone}';
-  }
+  String toString() => 'Task{id: $id, title: $title, importance: $importance, '
+      'deadline: $deadline, isDone: $isDone}';
 }

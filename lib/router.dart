@@ -8,11 +8,11 @@ final GoRouter router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const HomePage(),
+      builder: (final context, final state) => const HomePage(),
     ),
     GoRoute(
       path: '/taskpage',
-      builder: (context, state) {
+      builder: (final context, final state) {
         final task = state.extra as Task?;
         return TaskPage(task: task);
       },

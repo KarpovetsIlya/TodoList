@@ -6,14 +6,14 @@ class CustomDataPicker extends StatelessWidget {
   final String formattedDate;
 
   const CustomDataPicker({
-    super.key,
     required this.date,
     required this.onDateSelected,
-    required this.formattedDate, // Добавляем параметр сюда
+    required this.formattedDate,
+    super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final theme = Theme.of(context);
 
     return Column(
@@ -27,17 +27,15 @@ class CustomDataPicker extends StatelessWidget {
               firstDate: DateTime(2022),
               lastDate: DateTime(2030),
               locale: const Locale('ru', 'RU'),
-              builder: (context, child) {
-                return Theme(
-                  data: theme.copyWith(
-                    colorScheme: theme.colorScheme.copyWith(
-                      primary: theme.primaryColor,
-                      onSurface: theme.textTheme.bodyLarge?.color,
-                    ),
+              builder: (final context, final child) => Theme(
+                data: theme.copyWith(
+                  colorScheme: theme.colorScheme.copyWith(
+                    primary: theme.primaryColor,
+                    onSurface: theme.textTheme.bodyLarge?.color,
                   ),
-                  child: child!,
-                );
-              },
+                ),
+                child: child!,
+              ),
             );
             if (selectedDate != null) {
               onDateSelected(selectedDate);
@@ -45,7 +43,7 @@ class CustomDataPicker extends StatelessWidget {
           },
           style: TextButton.styleFrom(
             foregroundColor: theme.primaryColor,
-            padding: const EdgeInsets.all(0),
+            padding: EdgeInsets.zero,
           ),
           child: Text(
             formattedDate,

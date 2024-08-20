@@ -8,8 +8,8 @@ class TaskItem extends StatelessWidget {
   final VoidCallback? onEdit;
 
   const TaskItem({
-    super.key,
     required this.task,
+    super.key,
     this.onCheckboxChanged,
     this.onDelete,
     this.onEdit,
@@ -38,7 +38,7 @@ class TaskItem extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final priorityIcon = _getPriorityIcon();
     final priorityColor = _getPriorityColor();
 
@@ -58,10 +58,8 @@ class TaskItem extends StatelessWidget {
           ),
         ),
       ),
-      onDismissed: (direction) {
-        if (onDelete != null) {
-          onDelete!();
-        }
+      onDismissed: (final direction) {
+        onDelete?.call();
       },
       child: Row(
         children: [

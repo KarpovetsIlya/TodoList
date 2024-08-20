@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class CustomTitleInput extends StatelessWidget {
   final TextEditingController controller;
 
-  const CustomTitleInput({super.key, required this.controller});
+  const CustomTitleInput({required this.controller, super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final theme = Theme.of(context);
 
     return TextField(

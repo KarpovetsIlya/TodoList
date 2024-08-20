@@ -31,11 +31,11 @@ class _HomeScreenState extends State<HomePage> {
     });
   }
 
-  Future<void> _navigateToTaskPage(Task? task) async {
+  Future<void> _navigateToTaskPage(final Task? task) async {
     final updatedTask = await context.push('/taskpage', extra: task);
     if (updatedTask != null && updatedTask is Task) {
       setState(() {
-        final index = _tasks.indexWhere((t) => t.id == updatedTask.id);
+        final index = _tasks.indexWhere((final t) => t.id == updatedTask.id);
         if (index != -1) {
           _tasks[index] = updatedTask;
         } else {
@@ -46,14 +46,14 @@ class _HomeScreenState extends State<HomePage> {
     }
   }
 
-  void _deleteTask(Task task) async {
+  Future<void> _deleteTask(final Task task) async {
     await _hiveDataStore.deleteTask(task: task);
     setState(() {
       _tasks.remove(task);
     });
   }
 
-  void _toggleTaskCompletion(Task task, bool? value) async {
+  Future<void> _toggleTaskCompletion(final Task task, final bool? value) async {
     task.isDone = value ?? false;
     await _hiveDataStore.updateTask(task: task);
     setState(() {});
@@ -66,8 +66,7 @@ class _HomeScreenState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(final BuildContext context) => Scaffold(
       appBar: CustomAppBar(
         tasks: _tasks,
         isVisible: _isVisible,
@@ -78,12 +77,12 @@ class _HomeScreenState extends State<HomePage> {
           Expanded(
             child: ListView.builder(
               itemCount: _tasks.length,
-              itemBuilder: (context, index) {
+              itemBuilder: (final context, final index) {
                 final task = _tasks[index];
                 return _isVisible || !task.isDone
                     ? TaskItem(
                         task: task,
-                        onCheckboxChanged: (value) {
+                        onCheckboxChanged: (final value) {
                           _toggleTaskCompletion(task, value);
                         },
                         onDelete: () {
@@ -101,7 +100,6 @@ class _HomeScreenState extends State<HomePage> {
       ),
       bottomNavigationBar: CustomBottomBar(onAdd: () {
         _navigateToTaskPage(null);
-      }),
+      },),
     );
-  }
 }

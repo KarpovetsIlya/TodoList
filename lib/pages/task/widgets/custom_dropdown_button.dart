@@ -6,14 +6,14 @@ class CustomDropdownButton extends StatelessWidget {
   final ValueChanged<String> onChanged;
 
   const CustomDropdownButton({
-    super.key,
     required this.value,
     required this.options,
     required this.onChanged,
+    super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final theme = Theme.of(context);
 
     return Column(
@@ -35,17 +35,19 @@ class CustomDropdownButton extends StatelessWidget {
             height: 2,
             color: theme.dividerColor,
           ),
-          onChanged: (String? newValue) {
+          onChanged: (final newValue) {
             if (newValue != null) {
               onChanged(newValue);
             }
           },
-          items: options.map<DropdownMenuItem<String>>((String option) {
-            return DropdownMenuItem<String>(
-              value: option,
-              child: Text(option),
-            );
-          }).toList(),
+          items: options
+              .map<DropdownMenuItem<String>>(
+                (final option) => DropdownMenuItem<String>(
+                  value: option,
+                  child: Text(option),
+                ),
+              )
+              .toList(),
         ),
       ],
     );

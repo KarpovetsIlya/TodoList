@@ -6,10 +6,10 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback onToggleVisibility;
 
   const CustomAppBar({
-    super.key,
     required this.tasks,
     required this.isVisible,
     required this.onToggleVisibility,
+    super.key,
   });
 
   @override
@@ -21,7 +21,7 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 
 class CustomAppBarState extends State<CustomAppBar> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     final ThemeData theme = Theme.of(context);
 
     return AppBar(
@@ -45,7 +45,8 @@ class CustomAppBarState extends State<CustomAppBar> {
             Row(
               children: [
                 Text(
-                  'Выполнено — ${widget.tasks.where((task) => task.isDone).length}',
+                  'Выполнено — '
+                  '${widget.tasks.where((final task) => task.isDone).length}',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: theme.textTheme.bodyLarge?.color,
                   ),
