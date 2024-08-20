@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomDataPicker extends StatelessWidget {
-  final DateTime date;
+  final DateTime? date;
   final ValueChanged<DateTime> onDateSelected;
   final String formattedDate;
 
@@ -9,7 +9,7 @@ class CustomDataPicker extends StatelessWidget {
     super.key,
     required this.date,
     required this.onDateSelected,
-    required this.formattedDate,
+    required this.formattedDate, // Добавляем параметр сюда
   });
 
   @override
@@ -19,17 +19,11 @@ class CustomDataPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Сделать до',
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.textTheme.titleLarge?.color,
-          ),
-        ),
         TextButton(
           onPressed: () async {
             final selectedDate = await showDatePicker(
               context: context,
-              initialDate: date,
+              initialDate: date ?? DateTime.now(),
               firstDate: DateTime(2022),
               lastDate: DateTime(2030),
               locale: const Locale('ru', 'RU'),

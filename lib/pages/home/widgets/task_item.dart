@@ -78,15 +78,28 @@ class TaskItem extends StatelessWidget {
             const SizedBox(width: 8),
           ],
           Expanded(
-            child: Text(
-              task.title,
-              style: TextStyle(
-                fontSize: 24,
-                color: task.isDone
-                    ? Colors.grey
-                    : Theme.of(context).textTheme.bodyLarge?.color,
-                decoration: task.isDone ? TextDecoration.lineThrough : null,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  task.title,
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: task.isDone
+                        ? Colors.grey
+                        : Theme.of(context).textTheme.bodyLarge?.color,
+                    decoration: task.isDone ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  task.deadline.toString(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
           ),
           IconButton(

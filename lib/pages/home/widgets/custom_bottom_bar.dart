@@ -13,12 +13,13 @@ class CustomBottomBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          IconButton(
-            icon: Icon(
-              Icons.add,
-              color: theme.primaryColor,
-            ),
+          FloatingActionButton(
             onPressed: onAdd,
+            backgroundColor: theme.primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30.0),
+            ),
+            child: const Icon(Icons.add, color: Colors.white),
           ),
         ],
       ),
