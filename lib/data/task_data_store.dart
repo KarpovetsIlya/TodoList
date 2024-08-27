@@ -6,7 +6,7 @@ class HiveDataStore {
   static const boxName = 'taskBox';
   final Box<Task> box = Hive.box<Task>(boxName);
 
-  Future<void> addTask(final todo, {required final Task task}) async {
+  Future<void> addTask({required final Task task}) async {
     await box.put(task.id, task);
   }
 

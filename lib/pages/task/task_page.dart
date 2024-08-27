@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:todolist/bloc/task_bloc.dart';
+import 'package:todolist/bloc/task_event.dart';
 import 'package:todolist/data/task_data_store.dart';
+import 'package:todolist/main.dart';
 import 'package:todolist/model/task.dart';
 import 'package:todolist/pages/task/widgets/custom_data_picker.dart';
 import 'package:todolist/pages/task/widgets/custom_dropdown_button.dart';
@@ -72,9 +76,9 @@ class _TaskPageState extends State<TaskPage> {
       ..deadline = date;
 
     if (widget.task == null) {
-      await _hiveDataStore.addTask(_currentTask, task: _currentTask);
+      context.read<TaskBloc>().add(AddTask(_currentTask));
     } else {
-      await _hiveDataStore.updateTask(task: _currentTask);
+      context.read<TaskBloc>().add(UpdateTask(_currentTask));
     }
   }
 

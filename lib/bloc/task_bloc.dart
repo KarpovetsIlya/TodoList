@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
 import 'package:todolist/bloc/task_event.dart';
 import 'package:todolist/bloc/task_state.dart';
 import 'package:todolist/data/task_data_store.dart';
@@ -20,6 +21,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   ) async {
     emit(TaskLoadInProgress());
     try {
+      await Hive.openBox<Task>('taskBox');
       final tasks = _hiveDataStore.box.values.toList().cast<Task>();
       emit(TaskLoadSuccess(tasks));
     } catch (_) {
@@ -32,7 +34,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     final Emitter<TaskState> emit,
   ) async {
     try {
-      await _hiveDataStore.updateTask(task: event.task);
+      await _hiveDataStore.addTask(task: event.task);
       add(LoadTasks());
     } catch (_) {
       emit(TaskLoadFailure());
