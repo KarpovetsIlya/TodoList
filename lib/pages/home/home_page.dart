@@ -1,105 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:todolist/data/task_data_store.dart';
+import 'package:todolist/bloc/task_bloc.dart';
+import 'package:todolist/bloc/task_event.dart';
+import 'package:todolist/bloc/task_state.dart';
 import 'package:todolist/model/task.dart';
-import 'package:todolist/pages/home/widgets/custom_app_bar.dart';
+
 import 'package:todolist/pages/home/widgets/custom_bottom_bar.dart';
 import 'package:todolist/pages/home/widgets/task_item.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomePage> {
-  final HiveDataStore _hiveDataStore = HiveDataStore();
-  List<Task> _tasks = [];
-  bool _isVisible = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTasks();
-  }
-
-  Future<void> _loadTasks() async {
-    final tasks = _hiveDataStore.box.values.toList();
-    setState(() {
-      _tasks = tasks.cast<Task>();
-    });
-  }
-
-  Future<void> _navigateToTaskPage(final Task? task) async {
+  Future<void> _navigateToTaskPage(final BuildContext context, final Task? task) async {
     final updatedTask = await context.push('/taskpage', extra: task);
     if (updatedTask != null && updatedTask is Task) {
-      setState(() {
-        final index = _tasks.indexWhere((final t) => t.id == updatedTask.id);
-        if (index != -1) {
-          _tasks[index] = updatedTask;
-        } else {
-          _tasks.add(updatedTask);
-        }
-      });
-      await _hiveDataStore.updateTask(task: updatedTask);
+      context.read<TaskBloc>().add(UpdateTask(updatedTask));
     }
-  }
-
-  Future<void> _deleteTask(final Task task) async {
-    await _hiveDataStore.deleteTask(task: task);
-    setState(() {
-      _tasks.remove(task);
-    });
-  }
-
-  Future<void> _toggleTaskCompletion(final Task task, final bool? value) async {
-    task.isDone = value ?? false;
-    await _hiveDataStore.updateTask(task: task);
-    setState(() {});
-  }
-
-  void _toggleVisibility() {
-    setState(() {
-      _isVisible = !_isVisible;
-    });
   }
 
   @override
   Widget build(final BuildContext context) => Scaffold(
-      appBar: CustomAppBar(
-        tasks: _tasks,
-        isVisible: _isVisible,
-        onToggleVisibility: _toggleVisibility,
+      appBar: AppBar(
+        title: BlocBuilder<TaskBloc, TaskState>(
+          builder: (final context, final state) {
+            if (state is TaskLoadSuccess) {
+              return Text('Задачи (${state.tasks.length})');
+            }
+            return const Text('Задачи');
+          },
+        ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: _tasks.length,
+      body: BlocBuilder<TaskBloc, TaskState>(
+        builder: (final context, final state) {
+          if (state is TaskLoadInProgress) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is TaskLoadSuccess) {
+            final tasks = state.tasks;
+            return ListView.builder(
+              itemCount: tasks.length,
               itemBuilder: (final context, final index) {
-                final task = _tasks[index];
-                return _isVisible || !task.isDone
-                    ? TaskItem(
-                        task: task,
-                        onCheckboxChanged: (final value) {
-                          _toggleTaskCompletion(task, value);
-                        },
-                        onDelete: () {
-                          _deleteTask(task);
-                        },
-                        onEdit: () {
-                          _navigateToTaskPage(task);
-                        },
-                      )
-                    : Container();
+                final task = tasks[index];
+                return TaskItem(
+                  task: task,
+                  onCheckboxChanged: (final value) {
+                    task.isDone = value ?? false;
+                    context.read<TaskBloc>().add(UpdateTask(task));
+                  },
+                  onDelete: () {
+                    context.read<TaskBloc>().add(DeleteTask(task));
+                  },
+                  onEdit: () {
+                    _navigateToTaskPage(context, task);
+                  },
+                );
               },
-            ),
-          ),
-        ],
+            );
+          } else {
+            return const Center(child: Text('Не удалось загрузить задачи'));
+          }
+        },
       ),
-      bottomNavigationBar: CustomBottomBar(onAdd: () {
-        _navigateToTaskPage(null);
-      },),
+      bottomNavigationBar: CustomBottomBar(
+        onAdd: () {
+          _navigateToTaskPage(context, null);
+        },
+      ),
     );
 }
